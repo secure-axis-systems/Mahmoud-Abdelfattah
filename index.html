@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12304a">
+  <title>Eng. Mahmoud Abdelfattah — HVAC Load Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#" aria-label="Eng. Mahmoud Abdelfattah">
+        <span class="brand-mark" aria-hidden="true">❄</span>
+        <span><strong>Eng. Mahmoud Abdelfattah</strong><small data-i18n="brandSubtitle">حاسبة أحمال التبريد</small></span>
+      </a>
+      <div class="header-controls">
+        <span class="header-note" data-i18n="headerNote">تقدير أولي · وحدات مترية</span>
+        <button class="language-button" id="language-toggle" type="button" lang="en">English</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro">
+      <p class="eyebrow" data-i18n="eyebrow">أداة مساعدة للتقدير</p>
+      <h1 data-i18n="headline">ابدأ بتقدير حمل التبريد لمساحتك</h1>
+      <p data-i18n="introText">أدخل معلومات الغرفة وراجع الافتراضات بوضوح قبل مقارنة السعات المتاحة.</p>
+      <div class="notice" role="note">
+        <span class="notice-icon" aria-hidden="true">!</span>
+        <p><strong data-i18n="noticeTitle">تنبيه هندسي:</strong> <span data-i18n="noticeText">هذه نتيجة أولية توضيحية وليست حساب أحمال معتمدًا أو بديلًا عن مراجعة مهندس تكييف. لا تتبع هذه الأداة Manual J أو ASHRAE.</span></p>
+      </div>
+    </section>
+
+    <div class="app-grid">
+      <section class="card input-card" aria-labelledby="form-title">
+        <div class="section-heading">
+          <span class="step-number" data-i18n="stepOne">١</span>
+          <div><h2 id="form-title" data-i18n="formTitle">معلومات المشروع والغرفة</h2><p data-i18n="requiredHint">الحقول المعلّمة بـ * مطلوبة.</p></div>
+        </div>
+
+        <form id="calc-form" novalidate>
+          <fieldset>
+            <legend><span data-i18n="projectLegend">بيانات المشروع</span> <span class="legend-optional" data-i18n="optional">اختياري</span></legend>
+            <div class="form-grid">
+              <div class="field">
+                <label for="project-name" data-i18n="projectName">اسم المشروع</label>
+                <input id="project-name" name="projectName" type="text" maxlength="100" data-i18n-placeholder="projectPlaceholder" placeholder="مثال: غرفة النوم">
+              </div>
+              <div class="field">
+                <label for="customer-name" data-i18n="customerName">اسم العميل</label>
+                <input id="customer-name" name="customerName" type="text" maxlength="100" data-i18n-placeholder="optional" placeholder="اختياري">
+              </div>
+              <div class="field">
+                <label for="climate-zone"><span data-i18n="climateLabel">المدينة أو المنطقة المناخية</span> <span class="required">*</span></label>
+                <input id="climate-zone" name="climateZone" type="text" required maxlength="100" data-i18n-placeholder="climatePlaceholder" placeholder="مثال: الرياض / حار جاف">
+              </div>
+              <div class="field">
+                <label for="room-use"><span data-i18n="roomUse">استخدام الغرفة</span> <span class="required">*</span></label>
+                <select id="room-use" name="roomUse" required>
+                  <option value="bedroom" data-i18n="bedroom">غرفة نوم</option>
+                  <option value="living" data-i18n="living">غرفة معيشة</option>
+                  <option value="office" data-i18n="office">مكتب</option>
+                  <option value="shop" data-i18n="shop">متجر</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="dimensionsLegend">الأبعاد والإشغال</legend>
+            <div class="form-grid three-columns">
+              <div class="field">
+                <label for="length"><span data-i18n="length">الطول</span> <span class="required">*</span></label>
+                <div class="input-unit"><input id="length" name="length" type="number" min="0.1" step="any" required inputmode="decimal" placeholder="4"><span data-i18n="meter">م</span></div>
+              </div>
+              <div class="field">
+                <label for="width"><span data-i18n="width">العرض</span> <span class="required">*</span></label>
+                <div class="input-unit"><input id="width" name="width" type="number" min="0.1" step="any" required inputmode="decimal" placeholder="3"><span data-i18n="meter">م</span></div>
+              </div>
+              <div class="field">
+                <label for="height"><span data-i18n="height">ارتفاع السقف</span> <span class="required">*</span></label>
+                <div class="input-unit"><input id="height" name="height" type="number" min="0.1" step="any" required inputmode="decimal" placeholder="2.8"><span data-i18n="meter">م</span></div>
+              </div>
+              <div class="field">
+                <label for="occupants"><span data-i18n="occupants">عدد الأشخاص</span> <span class="required">*</span></label>
+                <input id="occupants" name="occupants" type="number" min="0" step="1" required inputmode="numeric" placeholder="2">
+              </div>
+              <div class="field">
+                <label for="window-area"><span data-i18n="windowArea">مساحة النوافذ</span> <span class="required">*</span></label>
+                <div class="input-unit"><input id="window-area" name="windowArea" type="number" min="0" step="any" required inputmode="decimal" placeholder="2"><span data-i18n="squareMeter">م²</span></div>
+              </div>
+              <div class="field">
+                <label for="sun-exposure"><span data-i18n="sunExposure">التعرض للشمس</span> <span class="required">*</span></label>
+                <select id="sun-exposure" name="sunExposure" required>
+                  <option value="low" data-i18n="low">منخفض</option>
+                  <option value="medium" selected data-i18n="medium">متوسط</option>
+                  <option value="high" data-i18n="high">مرتفع</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="insulation"><span data-i18n="insulation">جودة العزل</span> <span class="required">*</span></label>
+                <select id="insulation" name="insulation" required>
+                  <option value="good" data-i18n="good">جيد</option>
+                  <option value="average" selected data-i18n="average">متوسط</option>
+                  <option value="poor" data-i18n="poor">ضعيف</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <details class="assumptions-editor">
+            <summary data-i18n="assumptionsSummary">تعديل افتراضات التقدير</summary>
+            <p class="field-help" data-i18n="assumptionsIntro">قيم بداية توضيحية. عدّلها عند توفر بيانات تصميم موثوقة؛ لا تمثل هذه القيم معيارًا هندسيًا.</p>
+            <div class="form-grid three-columns assumptions-grid">
+              <div class="field">
+                <label for="base-coefficient" data-i18n="baseCoefficient">معامل الحمل الأساسي</label>
+                <div class="input-unit"><input id="base-coefficient" name="baseCoefficient" type="number" min="0" step="any" value="18"><span>W/m³</span></div>
+              </div>
+              <div class="field">
+                <label for="climate-factor" data-i18n="climateFactor">معامل المناخ</label>
+                <input id="climate-factor" name="climateFactor" type="number" min="0" step="any" value="1">
+              </div>
+              <div class="field">
+                <label for="occupant-coefficient" data-i18n="occupantCoefficient">حمل الشخص</label>
+                <div class="input-unit"><input id="occupant-coefficient" name="occupantCoefficient" type="number" min="0" step="any" value="120"><span>W/person</span></div>
+              </div>
+              <div class="field">
+                <label for="window-coefficient" data-i18n="windowCoefficient">معامل النوافذ</label>
+                <div class="input-unit"><input id="window-coefficient" name="windowCoefficient" type="number" min="0" step="any" value="150"><span>W/m²</span></div>
+              </div>
+            </div>
+            <p class="field-help" data-i18n="factorNote">مضاعفات العزل: جيد 0.85، متوسط 1.00، ضعيف 1.20. ومضاعفات الشمس: منخفض 0.70، متوسط 1.00، مرتفع 1.30. هذه أيضًا قيم أولية قابلة للتعديل في الكود.</p>
+          </details>
+
+          <div id="form-errors" class="error-box" role="alert" aria-live="polite" tabindex="-1" hidden></div>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit"><span aria-hidden="true">▦</span> <span data-i18n="calculate">احسب التقدير</span></button>
+            <button class="button button-secondary" id="reset-button" type="reset" data-i18n="reset">إعادة ضبط</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card results-card" aria-labelledby="results-title" aria-live="polite">
+        <div class="section-heading">
+          <span class="step-number" data-i18n="stepTwo">٢</span>
+          <div><h2 id="results-title" data-i18n="resultsTitle">نتيجة التقدير</h2><p data-i18n="resultsHint">ستظهر النتيجة بعد إدخال البيانات.</p></div>
+        </div>
+        <div id="results-placeholder" class="results-placeholder">
+          <span class="placeholder-icon" aria-hidden="true">⌁</span>
+          <p><span data-i18n="placeholderText">أكمل معلومات الغرفة ثم اضغط</span> <strong data-i18n="calculate">احسب التقدير</strong>.</p>
+        </div>
+        <div id="results-content" hidden>
+          <div class="result-area">
+            <span data-i18n="floorArea">مساحة الأرضية</span>
+            <strong><span id="result-area">—</span> <small data-i18n="squareMeter">م²</small></strong>
+          </div>
+          <div class="load-highlight">
+            <span data-i18n="estimatedLoad">تقدير أولي لحمل التبريد</span>
+            <strong id="result-watts">—</strong>
+            <div class="load-units"><span id="result-kw">—</span> kW <span class="unit-separator">·</span> <span id="result-btu">—</span> BTU/h</div>
+          </div>
+          <div class="candidate-box">
+            <span data-i18n="candidateCapacity">مرشح سعة توضيحي</span>
+            <strong id="result-candidate">—</strong>
+            <p id="candidate-note"></p>
+          </div>
+          <div class="capacity-section">
+            <div class="capacity-heading"><h3 data-i18n="capacityCompare">مقارنة سعات المثال</h3><span data-i18n="illustrativeData">بيانات توضيحية</span></div>
+            <label class="capacity-label" for="capacities" data-i18n="capacityLabel">السعات المتاحة (BTU/h) — قيمة لكل سطر</label>
+            <textarea id="capacities" rows="3" spellcheck="false">9000
+12000
+18000
+24000
+30000</textarea>
+            <p id="capacity-error" class="field-help error-text" hidden></p>
+            <div id="capacity-comparison" class="capacity-comparison"></div>
+          </div>
+
+          <div class="equipment-section">
+            <div class="capacity-heading"><h3 id="equipment-heading">قائمة الوحدات التكييف</h3><span>بيانات تجريبية</span></div>
+            <div class="equipment-wrap">
+              <table class="equipment-table" id="equipment-table">
+                <thead>
+                  <tr>
+                    <th>العلامة</th>
+                    <th>الموديل</th>
+                    <th>السعة</th>
+                    <th>القدرة</th>
+                    <th>التطابق</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <details class="breakdown">
+            <summary data-i18n="breakdownSummary">الافتراضات وخطوات الحساب</summary>
+            <div id="breakdown-content"></div>
+          </details>
+          <div class="results-actions">
+            <button class="button button-primary button-small" id="print-button" type="button" data-i18n="print">طباعة التقرير</button>
+            <button class="button button-secondary button-small" id="export-button" type="button" data-i18n="export">تصدير JSON</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="page-footer">
+      <span>Eng. Mahmoud Abdelfattah</span> · <span data-i18n="footerNote">تقدير توضيحي قابل للمراجعة · النتائج لا تغني عن الحساب الهندسي المعتمد.</span>
+    </footer>
+  </main>
+</body>
+</html>
